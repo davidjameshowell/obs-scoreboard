@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Panel</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+        var timer;
+        var timerRunning = false;
+        var timerDirection = 'decrement';
+
+        function updateScoreboard(guid, key, value, showMessage = true) {
+            $.post('/update/' + guid, { [key]: value }, function(response) {
+                if (response.success && showMessage) {
+                    $('#status-box').text(key + ' updated successfully!').show().delay(2000).fadeOut();
+                }
+            });
+        }
+
+        function incrementValue(guid, key) {
+            let element = document.getElementById(key);
+            let value = parseInt(element.value) + 1;
+            element.value = value;
+            updateScoreboard(guid, key, value);
+        }
+
+        function decrementValue(guid, key) {
+            let element = document.getElementById(key);
+            let value = parseInt(element.value) - 1;
+            element.value = value;
+            updateScoreboard(guid, key, value);
+        }
+
+        function startTimer(direction) {
+            if (!timerRunning) {
+                timerDirection = direction;
+                timerRunning = true;
+                timer = setInterval(function() {
+                    var timeElement = $('#time');
+                    var timeParts = timeElement.val().split(':');
+                    var minutes = parseInt(timeParts[0]);
+                    var seconds = parseInt(timeParts[1]);
+
+                    if (timerDirection === 'decrement') {
+                        if (seconds === 0) {
+                            if (minutes === 0) {
+                                clearInterval(timer);
+                                timerRunning = false;
+                                return;
+                            } else {
+                                minutes--;
+                                seconds = 59;
+                            }
+                        } else {
+                            seconds--;
+                        }
+                    } else {
+                        if (seconds === 59) {
+                            if (minutes === 119) {
+                                clearInterval(timer);
+                                timerRunning = false;
+                                return;
+                            } else {
+                                minutes++;
+                                seconds = 0;
+                            }
+                        } else {
+                            seconds++;
+                        }
+                    }
+
+                    var newTime = (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+                    timeElement.val(newTime);
+                    updateScoreboard('{{ guid }}', 'time', newTime, false);
+                }, 1000);
+            }
+        }
+
+        function stopTimer() {
+            clearInterval(timer);
+            timerRunning = false;
+        }
+
+        function resetTimer() {
+            stopTimer();
+            var newTime = '00:00';
+            $('#time').val(newTime);
+            updateScoreboard('{{ guid }}', 'time', newTime, false);
+        }
+    </script>
+</head>
+<body class="bg-dark text-white">
+    <div class="container">
+        <h1 class="my-4 text-center">Control Panel for Scoreboard</h1>
+        <div id="status-box" class="alert alert-info" style="display: none;"></div>
+        <form onsubmit="return false;">
+            <div class="form-group">
+                <label for="score1">Team 1 Score:</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <button type="button" class="btn btn-danger" onclick="decrementValue('{{ guid }}', 'score1')">-</button>
+                    </div>
+                    <input type="text" id="score1" class="form-control" value="{{ score1 }}" onkeydown="if(event.keyCode == 13) updateScoreboard('{{ guid }}', 'score1', this.value)">
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-success" onclick="incrementValue('{{ guid }}', 'score1')">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="score2">Team 2 Score:</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <button type="button" class="btn btn-danger" onclick="decrementValue('{{ guid }}', 'score2')">-</button>
+                    </div>
+                    <input type="text" id="score2" class="form-control" value="{{ score2 }}" onkeydown="if(event.keyCode == 13) updateScoreboard('{{ guid }}', 'score2', this.value)">
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-success" onclick="incrementValue('{{ guid }}', 'score2')">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="to1">Team 1 Timeouts:</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <button type="button" class="btn btn-danger" onclick="decrementValue('{{ guid }}', 'to1')">-</button>
+                    </div>
+                    <input type="text" id="to1" class="form-control" value="{{ to1 }}" onkeydown="if(event.keyCode == 13) updateScoreboard('{{ guid }}', 'to1', this.value)">
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-success" onclick="incrementValue('{{ guid }}', 'to1')">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="fo1">Team 1 Fouls:</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <button type="button" class="btn btn-danger" onclick="decrementValue('{{ guid }}', 'fo1')">-</button>
+                    </div>
+                    <input type="text" id="fo1" class="form-control" value="{{ fo1 }}" onkeydown="if(event.keyCode == 13) updateScoreboard('{{ guid }}', 'fo1', this.value)">
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-success" onclick="incrementValue('{{ guid }}', 'fo1')">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="to2">Team 2 Timeouts:</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <button type="button" class="btn btn-danger" onclick="decrementValue('{{ guid }}', 'to2')">-</button>
+                    </div>
+                    <input type="text" id="to2" class="form-control" value="{{ to2 }}" onkeydown="if(event.keyCode == 13) updateScoreboard('{{ guid }}', 'to2', this.value)">
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-success" onclick="incrementValue('{{ guid }}', 'to2')">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="fo2">Team 2 Fouls:</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <button type="button" class="btn btn-danger" onclick="decrementValue('{{ guid }}', 'fo2')">-</button>
+                    </div>
+                    <input type="text" id="fo2" class="form-control" value="{{ fo2 }}" onkeydown="if(event.keyCode == 13) updateScoreboard('{{ guid }}', 'fo2', this.value)">
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-success" onclick="incrementValue('{{ guid }}', 'fo2')">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="time">Time:</label>
+                <input type="text" id="time" class="form-control" value="{{ time }}" onchange="updateScoreboard('{{ guid }}', 'time', this.value, false)">
+                <div class="timer-controls mt-2">
+                    <button class="btn btn-primary" onclick="startTimer('decrement')">Start Decrement</button>
+                    <button class="btn btn-primary" onclick="startTimer('increment')">Start Increment</button>
+                    <button class="btn btn-warning" onclick="stopTimer()">Pause</button>
+                    <button class="btn btn-danger" onclick="resetTimer()">Reset</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="period">Period:</label>
+                <input type="number" id="period" class="form-control" value="{{ period }}" onchange="updateScoreboard('{{ guid }}', 'period', this.value)">
+            </div>
+            <div class="form-group">
+                <label for="possession">Possession:</label>
+                <div>
+                    <input type="radio" id="possession-none" name="possession" value="none" {% if possession == 'none' %}checked{% endif %} onchange="updateScoreboard('{{ guid }}', 'possession', this.value)">
+                    <label for="possession-none">None</label>
+                </div>
+                <div>
+                    <input type="radio" id="possession-team1" name="possession" value="team1" {% if possession == 'team1' %}checked{% endif %} onchange="updateScoreboard('{{ guid }}', 'possession', this.value)">
+                    <label for="possession-team1">Team 1</label>
+                </div>
+                <div>
+                    <input type="radio" id="possession-team2" name="possession" value="team2" {% if possession == 'team2' %}checked{% endif %} onchange="updateScoreboard('{{ guid }}', 'possession', this.value)">
+                    <label for="possession-team2">Team 2</label>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

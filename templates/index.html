@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scorecard Overlay</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body class="bg-dark text-white">
+    <div class="container">
+        <h1 class="my-4 text-center">Scorecard Overlay for OBS</h1>
+        <form action="/scorecard" method="get">
+            <!-- Team 1 Details -->
+            <div class="form-group">
+                <label for="team1">Team 1 Name:</label>
+                <input type="text" id="team1" name="team1" class="form-control" value="Team 1">
+            </div>
+            <div class="form-group">
+                <label for="score1">Team 1 Score:</label>
+                <input type="number" id="score1" name="score1" class="form-control" value="0">
+            </div>
+            <div class="form-group">
+                <label for="to1">Team 1 Timeouts:</label>
+                <input type="number" id="to1" name="to1" class="form-control" value="0">
+            </div>
+            <div class="form-group">
+                <label for="fo1">Team 1 Fouls:</label>
+                <input type="number" id="fo1" name="fo1" class="form-control" value="0">
+            </div>
+            <div class="form-group">
+                <label for="logo1">Team 1 Logo URL:</label>
+                <input type="text" id="logo1" name="logo1" class="form-control" placeholder="http://example.com/logo1.png">
+            </div>
+            <div class="form-group">
+                <label for="color1">Team 1 Color:</label>
+                <input type="color" id="color1" name="color1" class="form-control" value="#FF0000">
+            </div>
+            <hr>
+            <!-- Team 2 Details -->
+            <div class="form-group">
+                <label for="team2">Team 2 Name:</label>
+                <input type="text" id="team2" name="team2" class="form-control" value="Team 2">
+            </div>
+            <div class="form-group">
+                <label for="score2">Team 2 Score:</label>
+                <input type="number" id="score2" name="score2" class="form-control" value="0">
+            </div>
+            <div class="form-group">
+                <label for="to2">Team 2 Timeouts:</label>
+                <input type="number" id="to2" name="to2" class="form-control" value="0">
+            </div>
+            <div class="form-group">
+                <label for="fo2">Team 2 Fouls:</label>
+                <input type="number" id="fo2" name="fo2" class="form-control" value="0">
+            </div>
+            <div class="form-group">
+                <label for="logo2">Team 2 Logo URL:</label>
+                <input type="text" id="logo2" name="logo2" class="form-control" placeholder="http://example.com/logo2.png">
+            </div>
+            <div class="form-group">
+                <label for="color2">Team 2 Color:</label>
+                <input type="color" id="color2" name="color2" class="form-control" value="#0000FF">
+            </div>
+            <hr>
+            <!-- Game Details -->
+            <div class="form-group">
+                <label for="time">Time:</label>
+                <input type="text" id="time" name="time" class="form-control" value="00:00">
+            </div>
+            <div class="form-group">
+                <label for="period">Period:</label>
+                <input type="number" id="period" name="period" class="form-control" value="1">
+            </div>
+            <div class="form-group">
+                <label for="possession">Possession:</label>
+                <select id="possession" name="possession" class="form-control">
+                    <option value="none">None</option>
+                    <option value="team1">Team 1</option>
+                    <option value="team2">Team 2</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="possession-icon">Possession Icon:</label>
+                <select id="possession-icon" name="possession_icon" class="form-control">
+                    <option value="fas fa-basketball-ball">Basketball</option>
+                    <option value="fas fa-football-ball">Football</option>
+                    <option value="fas fa-baseball-ball">Baseball</option>
+                    <option value="fas fa-table-tennis">Table Tennis</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Generate Scorecard</button>
+        </form>
+    </div>
+</body>
+</html>

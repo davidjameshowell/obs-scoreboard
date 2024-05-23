@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scorecard</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: transparent;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .scorecard {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 15px;
+        }
+        .team {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            position: relative;
+            flex: 1;
+        }
+        .team1 {
+            background-color: {{ color1 }};
+            flex-direction: row-reverse;
+            border-radius: 15px 0 0 15px;
+        }
+        .team2 {
+            background-color: {{ color2 }};
+            border-radius: 0 15px 15px 0;
+        }
+        .logo {
+            height: 50px;
+            margin: 0 10px;
+            background-color: transparent;
+            display: none;
+        }
+        .score {
+            font-size: 3em;
+            margin: 0 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        .team-name {
+            font-size: 2em;
+            padding: 0 10px;
+            display: flex;
+            align-items: center;
+        }
+        .additional-info {
+            font-size: 1em;
+        }
+        .time-period {
+            text-align: center;
+            background-color: #001f3f;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .time {
+            font-size: 2em;
+        }
+        .period {
+            font-size: 1.5em;
+        }
+        .possession {
+            font-size: 2.25em; /* 75% of the 3em score font size */
+            color: yellow;
+            margin-left: 10px;
+        }
+        .score-wrapper {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+        function updateScoreboard() {
+            $.getJSON('/scoreboard_data/{{ guid }}', function(data) {
+                if (data.error) {
+                    console.log(data.error);
+                } else {
+                    $('#team1-name').text(data.team1);
+                    $('#team2-name').text(data.team2);
+                    $('#score1').text(data.score1);
+                    $('#score2').text(data.score2);
+                    $('#to1').text('TO: ' + data.to1);
+                    $('#fo1').text('FO: ' + data.fo1);
+                    $('#to2').text('TO: ' + data.to2);
+                    $('#fo2').text('FO: ' + data.fo2);
+                    $('#time').text(data.time);
+                    $('#period').text('PERIOD ' + data.period);
+                    if (data.logo1) {
+                        $('#logo1').attr('src', data.logo1).show();
+                    } else {
+                        $('#logo1').hide();
+                    }
+                    if (data.logo2) {
+                        $('#logo2').attr('src', data.logo2).show();
+                    } else {
+                        $('#logo2').hide();
+                    }
+                    $('.team1').css('background-color', data.color1);
+                    $('.team2').css('background-color', data.color2);
+                    if (data.possession === 'team1') {
+                        $('#possession1').attr('class', data.possession_icon + ' possession').show();
+                        $('#possession2').hide();
+                    } else if (data.possession === 'team2') {
+                        $('#possession1').hide();
+                        $('#possession2').attr('class', data.possession_icon + ' possession').show();
+                    } else {
+                        $('#possession1').hide();
+                        $('#possession2').hide();
+                    }
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            updateScoreboard();
+            setInterval(updateScoreboard, 980); // Refresh every 980ms
+        });
+    </script>
+</head>
+<body>
+    <div class="scorecard">
+        <div class="team team1">
+            <img id="logo1" src="" alt="Team 1 Logo" class="logo rounded">
+            <div class="team-name" id="team1-name">{{ team1 }}</div>
+            <div class="score-wrapper">
+                <div class="score" id="score1">{{ score1 }}</div>
+                <i id="possession1" class="possession" style="display: none;"></i>
+            </div>
+            <div class="additional-info">
+                <div id="to1">TO: {{ to1 }}</div>
+                <div id="fo1">FO: {{ fo1 }}</div>
+            </div>
+        </div>
+        <div class="time-period">
+            <div class="time" id="time">{{ time }}</div>
+            <div class="period" id="period">PERIOD {{ period }}</div>
+        </div>
+        <div class="team team2">
+            <div class="additional-info">
+                <div id="to2">TO: {{ to2 }}</div>
+                <div id="fo2">FO: {{ fo2 }}</div>
+            </div>
+            <div class="score-wrapper">
+                <div class="score" id="score2">{{ score2 }}</div>
+                <i id="possession2" class="possession" style="display: none;"></i>
+            </div>
+            <div class="team-name" id="team2-name">{{ team2 }}</div>
+            <img id="logo2" src="" alt="Team 2 Logo" class="logo rounded">
+        </div>
+    </div>
+</body>
+</html>
